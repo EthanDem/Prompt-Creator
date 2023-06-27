@@ -1,5 +1,6 @@
 import streamlit as st
 import json
+import base64
 
 def create_prompt(title, content):
     return {"title": title, "prompt": content}
@@ -8,13 +9,10 @@ def create_json_sequence(name, prompts):
     return {"name": name, "prompts": prompts}
 
 def download_link(object_to_download, download_filename, download_link_text):
-    import base64
-    import pandas as pd
-    if isinstance(object_to_download,pd.DataFrame):
-        object_to_download = object_to_download.to_csv(index=False)
+    if isinstance(object_to_download,str):
+        object_to_download = object_to_download.encode()
 
-    # some strings <-> bytes conversions necessary here
-    b64 = base64.b64encode(object_to_download.encode()).decode()
+    b64 = base64.b64encode(object_to_download).decode()
 
     return f'<a href="data:file/txt;base64,{b64}" download="{download_filename}">{download_link_text}</a>'
 
@@ -39,10 +37,8 @@ def app():
         content = st.text_input(f"Prompt content {i+1}")
         prompts.append(create_prompt(title, content))
 
-    if st.button("Add Sequence"):
-        data.append(create_json_sequence(sequence_name, prompts))
-
     if st.button("Download JSON file"):
+        data.append(create_json_sequence(sequence_name, prompts))
         json_data = json.dumps(data, indent=4)
         tmp_download_link = download_link(json_data, 'prompt.json', 'Click here to download your JSON file')
         st.markdown(tmp_download_link, unsafe_allow_html=True)
