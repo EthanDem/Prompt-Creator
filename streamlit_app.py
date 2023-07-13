@@ -28,7 +28,7 @@ def app():
 
     st.header("Add new prompt sequence")
     sequence_name = st.text_input("Enter sequence name")
-    number_of_prompts = st.slider("Number of prompts in the sequence", 1, 10)
+    number_of_prompts = st.slider("Number of prompts in the sequence", 1, 15)
 
     prompts = []
     for i in range(number_of_prompts):
